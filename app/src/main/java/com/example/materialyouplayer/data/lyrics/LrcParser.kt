@@ -14,7 +14,7 @@ data class LyricLine(
     val startTime: Long,
     var endTime: Long,
     val text: String,
-    val words: List<LyricWord> = emptyList()
+    var words: MutableList<LyricWord> = mutableListOf() // تم التحويل لـ MutableList لحل خطأ الـ Array Access
 )
 
 object LrcParser {
@@ -52,12 +52,11 @@ object LrcParser {
                 
                 var lastIndex = 0
                 var currentWordStart = lineStartTime
-                var lastExtractedWord: String? = null
 
                 // نقوم بمسح السطر بحثًا عن التوقيتات الداخلية لربط كل كلمة بوقتها
                 while (wordMatcher.find()) {
                     val rawWord = lineContent.substring(lastIndex, wordMatcher.start())
-                    val cleanWord = rawWord.trim()
+                    val cleanWord = rawWord.trim() // إزالة المسافات الزائدة لضمان تطابق التوقيت مباشرة قبل الكلمة
 
                     if (cleanWord.isNotEmpty()) {
                         val wMin = wordMatcher.group(1)?.toLong() ?: 0L
@@ -65,9 +64,6 @@ object LrcParser {
                         val wMsStr = wordMatcher.group(3) ?: "0"
                         val wMs = padMilliseconds(wMsStr)
                         val currentWordEnd = (wMin * 60 * 1000) + (wSec * 1000) + wMs
-
-                        // معالجة عدم وجود مسافات بين المقاطع المقطعة (Syllables)
-                        val isContinuous = !rawWord.startsWith(" ") && wordList.isNotEmpty()
                         
                         wordList.add(
                             LyricWord(
@@ -84,7 +80,6 @@ object LrcParser {
                 // التقاط الكلمة الأخيرة في السطر إن وجدت بعد آخر تايم كود
                 val remainingWord = lineContent.substring(lastIndex).trim()
                 if (remainingWord.isNotEmpty()) {
-                    // وقت النهاية الافتراضي للكلمة الأخيرة سيتم ضبطه لاحقاً عبر قاعدة الـ Smart End Time
                     wordList.add(
                         LyricWord(
                             word = remainingWord,
@@ -100,7 +95,7 @@ object LrcParser {
                 parsedLines.add(
                     LyricLine(
                         startTime = lineStartTime,
-                        endTime = lineStartTime + 2000L, // قيمة افتراضية يتم تعديلها بالأسفل ديناميكيًا
+                        endTime = lineStartTime + 2000L, 
                         text = plainText,
                         words = wordList
                     )
@@ -124,8 +119,7 @@ object LrcParser {
                     finalLines[i + 1] = nextLine.copy(startTime = nextLine.startTime + 1L)
                 }
 
-                // قاعدة الـ Smart End Time: نهاية السطر هي بداية السطر الجديد بسلاسة، 
-                // إلا لو فيه بريك أو فاصل زمني طويل (أكبر من 1.5 ثانية)، السطر بيقفل بدري بـ 300ms بعد آخر كلمة لحفظ المظهر النظيف
+                // قاعدة الـ Smart End Time: نهاية السطر هي بداية السطر الجديد
                 val gap = nextLine.startTime - currentLine.startTime
                 if (gap > 1500L) {
                     val lastWordEnd = currentLine.words.lastOrNull()?.endTime ?: (currentLine.startTime + 1000L)
@@ -134,7 +128,7 @@ object LrcParser {
                     currentLine.endTime = nextLine.startTime
                 }
             } else {
-                // السطر الأخير في الأغنية يقفل بعد آخر كلمة فيه بـ 500 ميلي ثانية
+                // السطر الأخير في الأغنية
                 val lastWordEnd = currentLine.words.lastOrNull()?.endTime ?: (currentLine.startTime + 1500L)
                 currentLine.endTime = lastWordEnd + 500L
             }
@@ -150,7 +144,6 @@ object LrcParser {
         return finalLines
     }
 
-    // دالة لتوحيد الميلي ثانية المكونة من رقمين (مثال: 45 تصبح 450) لضمان دقة العمليات الحسابية
     private fun padMilliseconds(msStr: String): Long {
         val padded = when (msStr.length) {
             1 -> "${msStr}00"
@@ -160,7 +153,6 @@ object LrcParser {
         return padded.toLongOrNull() ?: 0L
     }
 
-    // دالة مساعدة لتنظيف النصوص البرمجية للـ Regex
     private fun String.replaceAll(regex: String, replacement: String): String {
         return Pattern.compile(regex).matcher(this).replaceAll(replacement)
     }
