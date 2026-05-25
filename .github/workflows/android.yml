@@ -11,6 +11,12 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # نحدد هنا اسم الفولدر اللي جواه المشروع لو مش في الـ Root
+    # كمثال لو الفولدر الرئيسي اسمه OmniMusic:
+    # defaults:
+    #   run:
+    #     working-directory: ./OmniMusic
+
     steps:
       - uses: actions/checkout@v4
         with:
