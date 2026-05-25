@@ -62,4 +62,5 @@ dependencies {
     implementation(libs.androidx.media3.ui)
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.customview:customview:1.1.0")
+    implementation("com.google.android.material:material:1.12.0")
 }
