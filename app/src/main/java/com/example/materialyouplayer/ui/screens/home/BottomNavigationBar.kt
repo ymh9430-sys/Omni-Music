@@ -31,6 +31,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.materialyouplayer.ui.viewmodel.MainViewModel
+import com.example.materialyouplayer.ui.theme.PureBlack
+import com.example.materialyouplayer.ui.theme.MaterialGreen
+
 
 enum class DragStates { COLLAPSED, EXPANDED }
 
