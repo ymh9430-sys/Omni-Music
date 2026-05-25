@@ -2,6 +2,7 @@ package com.example.materialyouplayer.playback
 
 import android.content.Intent
 import androidx.annotation.OptIn
+import androidx.media3.common.AudioAttributes
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
@@ -18,7 +19,7 @@ class PlaybackService : MediaSessionService() {
         
         // بناء مشغل الـ ExoPlayer الاحترافي وتجهيزه للأداء العالي
         player = ExoPlayer.Builder(this)
-            .setHandleAudioAttributes(true, true) // التعامل الذكي مع الفوكس (لو مكالمة جت الصوت يقف تلقائي)
+            .setAudioAttributes(AudioAttributes.DEFAULT, true) // التعامل الذكي مع الفوكس (لو مكالمة جت الصوت يقف تلقائي)
             .build()
 
         // إنشاء الـ MediaSession وربطه بالـ Player لإدارة التحكم الخارجي
