@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MaterialYouPlayer</string>
+    <string name="search_hint">Search your music</string>
+    <string name="tab_home">Home</string>
+    <string name="tab_albums">Albums</string>
+    <string name="tab_songs">Songs</string>
+    <string name="tab_playlists">Playlists</string>
+    <string name="tab_artists">Artists</string>
+</resources>
+
