@@ -39,7 +39,8 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.11"
+        // تحديث الاصدار ليكون متوافق تماماً مع Kotlin 1.9.x و JDK 21 في الـ Actions
+        kotlinCompilerExtensionVersion = "1.5.14" 
     }
     packaging {
         resources {
@@ -50,9 +51,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
-    // التعديل هنا: حوّلنا الشرطة لنقطة (runtime.ktx) عشان الـ Kotlin DSL يفهمها وميفتكرهاش عملية طرح
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
@@ -60,7 +59,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     
-    // Media3 (ExoPlayer + Session) لتشغيل الصوت في الخلفية والتحكم الكامل
+    // Media3 لتشغيل الصوت في الخلفية
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.session)
     implementation(libs.androidx.media3.ui)
