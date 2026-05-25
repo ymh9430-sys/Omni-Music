@@ -3,15 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
-// هنا برا android تماماً
-configurations.all {
-    resolutionStrategy {
-        force("androidx.customview:customview:1.1.0")
-        force("androidx.recyclerview:recyclerview:1.3.2")
-        force("androidx.customview:customview-poolingcontainer:1.0.0")
-    }
-}
-
 android {
     namespace = "com.example.materialyouplayer"
     compileSdk = 34
@@ -68,5 +59,5 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.session)
-    implementation(libs.androidx.media3.ui)
+    // media3-ui اتشالت لأنها بتسبب dependency conflict
 }
