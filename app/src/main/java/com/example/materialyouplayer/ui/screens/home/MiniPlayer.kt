@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
@@ -31,11 +32,9 @@ fun MiniPlayer(
     onMiniPlayerClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // مراقبة حالة المشغل والأغنية الحالية بالميلي ثانية فوريًا
     val playbackState by viewModel.playbackState.collectAsState()
-    val currentSong = playbackState.currentSong ?: return // إذا لم تكن هناك أغنية تعمل، يختفي المشغل تلقائيًا
+    val currentSong = playbackState.currentSong ?: return
 
-    // احتساب نسبة التقدم بدقة الميلي ثانية
     val progress = if (playbackState.duration > 0) {
         playbackState.currentPosition.toFloat() / playbackState.duration.toFloat()
     } else {
@@ -45,9 +44,9 @@ fun MiniPlayer(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp) // لجعله عائماً بحواف ناعمة فوق البار السفلي كما في صورتك
+            .padding(horizontal = 8.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFF111111)) // الرمادي الداكن المخصص للمشغل من صورتك
+            .background(Color(0xFF111111))
             .clickable { onMiniPlayerClick() }
     ) {
         Row(
@@ -56,7 +55,6 @@ fun MiniPlayer(
                 .padding(horizontal = 12.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 1. صورة كفر الأغنية (مربع بحواف دائرية ناعمة)
             Box(
                 modifier = Modifier
                     .size(48.dp)
@@ -66,10 +64,7 @@ fun MiniPlayer(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            // 2. نصوص الأغنية والفنان
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = currentSong.song.title,
                     color = Color.White,
@@ -88,7 +83,6 @@ fun MiniPlayer(
                 )
             }
 
-            // 3. أزرار التحكم الـ Minimalist جهة اليمين
             IconButton(onClick = { viewModel.skipToPrevious() }) {
                 Icon(
                     imageVector = Icons.Default.SkipPrevious,
@@ -100,12 +94,7 @@ fun MiniPlayer(
 
             IconButton(onClick = { viewModel.togglePlayPause() }) {
                 Icon(
-                    imageVector = if (playbackState.isPlaying) {
-                        // أيقونة الإيقاف المؤقت
-                        androidx.compose.material.icons.Icons.Default.Menu // سنستبدلها بـ Pause قياسي لاحقاً
-                    } else {
-                        Icons.Default.PlayArrow
-                    },
+                    imageVector = if (playbackState.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                     contentDescription = "Play/Pause",
                     tint = Color.White,
                     modifier = Modifier.size(28.dp)
@@ -122,13 +111,10 @@ fun MiniPlayer(
             }
         }
 
-        // 4. خط التقدم الأخضر النحيف الممتد بالكامل أسفل المشغل الصغير (المطابق لصورتك)
         LinearProgressIndicator(
             progress = { progress },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(3.dp),
-            color = MaterialGreen, // اللون الأخضر الماتيريال المختار من تصميمك
+            modifier = Modifier.fillMaxWidth().height(3.dp),
+            color = MaterialGreen,
             trackColor = Color.DarkGray.copy(alpha = 0.3f)
         )
     }
