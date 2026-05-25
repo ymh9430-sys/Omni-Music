@@ -3,6 +3,15 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
+// هنا برا android تماماً
+configurations.all {
+    resolutionStrategy {
+        force("androidx.customview:customview:1.1.0")
+        force("androidx.recyclerview:recyclerview:1.3.2")
+        force("androidx.customview:customview-poolingcontainer:1.0.0")
+    }
+}
+
 android {
     namespace = "com.example.materialyouplayer"
     compileSdk = 34
@@ -44,13 +53,6 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-
-    configurations.all {
-        resolutionStrategy {
-            force("androidx.customview:customview:1.1.0")
-            force("androidx.recyclerview:recyclerview:1.3.2")
         }
     }
 }
