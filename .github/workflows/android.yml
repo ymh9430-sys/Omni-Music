@@ -11,12 +11,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # نحدد هنا اسم الفولدر اللي جواه المشروع لو مش في الـ Root
-    # كمثال لو الفولدر الرئيسي اسمه OmniMusic:
-    # defaults:
-    #   run:
-    #     working-directory: ./OmniMusic
-
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,6 +21,10 @@ jobs:
         with:
           java-version: "21"
           distribution: "temurin"
+
+      # الخطوة السحرية لتوليد ملفات الـ Wrapper الناقصة لمنع خطأ الـ Jar File
+      - name: Setup Gradle Wrapper
+        run: gradle wrapper
 
       - name: Set Up Gradle
         uses: gradle/actions/setup-gradle@v4
