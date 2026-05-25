@@ -16,10 +16,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.materialyouplayer.data.lyrics.LrcParser
 import com.example.materialyouplayer.data.lyrics.LyricLine
-import com.example.materialyouplayer.ui.screens.home.PureBlack
+import com.example.materialyouplayer.ui.theme.PureBlack
 import com.example.materialyouplayer.ui.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalLayoutApi::class) // السماح باستخدام ميزات التخطيط التجريبية على السيرفر
 @Composable
 fun LyricsScreen(
     viewModel: MainViewModel,
@@ -29,7 +30,6 @@ fun LyricsScreen(
     val currentSong = playbackState.currentSong
     val currentPosition = playbackState.currentPosition
 
-    // تفكيك الكلمات فوريًا عند تغير الأغنية
     val lyricLines = remember(currentSong?.song?.lyrics) {
         LrcParser.parseLyrics(currentSong?.song?.lyrics)
     }
@@ -37,12 +37,10 @@ fun LyricsScreen(
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    // العثور على السطر الحالي الشغال بناءً على توقيت الميلي ثانية
     val currentLineIndex = remember(currentPosition, lyricLines) {
         lyricLines.indexOfFirst { currentPosition in it.startTime..it.endTime }
     }
 
-    // عمل Auto-Scroll ذكي وسلس للسطر الحالي ليبقى دائمًا في منتصف الشاشة
     LaunchedEffect(currentLineIndex) {
         if (currentLineIndex != -1) {
             coroutineScope.launch {
@@ -78,7 +76,6 @@ fun LyricsScreen(
                         currentPosition = currentPosition,
                         isCurrentLine = isCurrentLine,
                         onClick = {
-                            // ميزة قفز الأغنية للتوقيت عند الضغط على السطر (Seek on Click)
                             viewModel.seekTo(line.startTime)
                         }
                     )
@@ -88,6 +85,7 @@ fun LyricsScreen(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun KaraokeLineRow(
     line: LyricLine,
@@ -95,7 +93,6 @@ fun KaraokeLineRow(
     isCurrentLine: Boolean,
     onClick: () -> Unit
 ) {
-    // حجم الخط وحالته (يكبر ويزداد بياضًا لو هو السطر الحالي كـ Apple Music)
     val fontSize = if (isCurrentLine) 26.sp else 22.sp
     val fontWeight = if (isCurrentLine) FontWeight.ExtraBold else FontWeight.Bold
 
@@ -106,7 +103,6 @@ fun KaraokeLineRow(
             .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.Start
     ) {
-        // إذا كان السطر لا يحتوي على كلمات مفككة، نعرض النص العادي بلون خافت أو أبيض
         if (line.words.isEmpty()) {
             Text(
                 text = line.text,
@@ -115,20 +111,19 @@ fun KaraokeLineRow(
                 fontWeight = fontWeight
             )
         } else {
-            // عرض الكلمات كلمة بكلمة مع التلوين الديناميكي الدقيق
-            Row(modifier = Modifier.fillMaxWidth(), transformAwareWrap = true) {
+            androidx.compose.foundation.layout.FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start
+            ) {
                 line.words.forEach { wordInfo ->
                     val wordColor = when {
-                        // الكلمة تم غنائها وانتهت -> أبيض صريح
                         currentPosition >= wordInfo.endTime -> Color.White
-                        // الكلمة تُغنى الآن -> أبيض متوهج (أو يمكنك استخدام لون مخصص)
                         currentPosition in wordInfo.startTime..wordInfo.endTime -> Color.White
-                        // الكلمة لم يأتِ دورها بعد -> رمادي شفاف خافت جدًا
                         else -> Color.Gray.copy(alpha = 0.3f)
                     }
 
                     Text(
-                        text = wordInfo.word + " ", // الحفاظ على المسافة بعد الكلمة طبقاً للقاعدة
+                        text = wordInfo.word + " ",
                         color = wordColor,
                         fontSize = fontSize,
                         fontWeight = fontWeight
@@ -137,19 +132,4 @@ fun KaraokeLineRow(
             }
         }
     }
-}
-
-// دالة مساعدة لترتيب التفاف الكلمات التلقائي داخل الـ Row بدون مشاكل
-@Composable
-private fun Row(
-    modifier: Modifier = Modifier,
-    transformAwareWrap: Boolean,
-    content: @Composable RowScope.() -> Unit
-) {
-    androidx.compose.foundation.layout.FlowRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.Start,
-        maxItemsInEachRow = Int.MAX_VALUE,
-        content = content
-    )
 }
