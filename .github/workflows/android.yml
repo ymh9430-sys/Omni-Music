@@ -22,10 +22,6 @@ jobs:
           java-version: "21"
           distribution: "temurin"
 
-      # الخطوة السحرية لتوليد ملفات الـ Wrapper الناقصة لمنع خطأ الـ Jar File
-      - name: Setup Gradle Wrapper
-        run: gradle wrapper
-
       - name: Set Up Gradle
         uses: gradle/actions/setup-gradle@v4
 
@@ -61,8 +57,8 @@ jobs:
           $APKSIGNER sign \
             --ks keystore.jks \
             --ks-pass pass:player123 \
-            --key-pass pass:player123 \
             --ks-key-alias materialyouplayer \
+            --key-pass pass:player123 \
             --out app/build/outputs/apk/release/MaterialYouPlayer.apk \
             app/build/outputs/apk/release/aligned.apk
 
