@@ -60,4 +60,6 @@ dependencies {
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.session)
     implementation(libs.androidx.media3.ui)
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("androidx.customview:customview:1.1.0")
 }
