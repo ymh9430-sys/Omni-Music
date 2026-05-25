@@ -24,15 +24,8 @@ jobs:
 
       - name: Set Up Gradle
         uses: gradle/actions/setup-gradle@v4
-
-      - name: Download Gradle Wrapper JAR
-        run: |
-          mkdir -p gradle/wrapper
-          curl -L -o gradle/wrapper/gradle-wrapper.jar \
-            https://github.com/gradle/gradle/raw/v8.7.0/gradle/wrapper/gradle-wrapper.jar
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+        with:
+          gradle-version: "8.7"
 
       - name: Generate Keystore
         run: |
@@ -47,12 +40,7 @@ jobs:
             -dname "CN=MaterialYouPlayer, OU=App, O=App, L=Cairo, S=Cairo, C=EG"
 
       - name: Build Release APK
-        run: ./gradlew --console=plain assembleRelease --warning-mode summary
-        env:
-          APPLICATION_ID: com.example.materialyouplayer
-          APP_NAME: MaterialYouPlayer
-          PULL_REQUEST: "false"
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
+        run: gradle --console=plain assembleRelease --warning-mode summary
 
       - name: Sign APK
         run: |
