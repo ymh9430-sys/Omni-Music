@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Menu // استيراد الأيقونة البديلة الآمنة
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,7 +27,6 @@ import com.example.materialyouplayer.ui.screens.lyrics.LyricsScreen
 import com.example.materialyouplayer.ui.viewmodel.MainViewModel
 import com.example.materialyouplayer.ui.theme.PureBlack
 import com.example.materialyouplayer.ui.theme.MaterialGreen
-
 
 @Composable
 fun FullPlayerScreen(
@@ -57,7 +57,6 @@ fun FullPlayerScreen(
             .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // خط علوي صغير للسحب
         Box(
             modifier = Modifier
                 .padding(vertical = 12.dp)
@@ -67,7 +66,6 @@ fun FullPlayerScreen(
                 .background(Color.DarkGray.copy(alpha = 0.5f))
         )
 
-        // تبديل المحتوى بسلاسة (Crossfade) بين الكفر وشاشة الـ Lyrics
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -76,13 +74,11 @@ fun FullPlayerScreen(
         ) {
             Crossfade(targetState = showLyrics, label = "PlayerContent") { lyricsVisible ->
                 if (lyricsVisible) {
-                    // عرض شاشة الكلمات المزامنة كلمة بكلمة
                     LyricsScreen(
                         viewModel = viewModel,
                         modifier = Modifier.fillMaxSize()
                     )
                 } else {
-                    // الواجهة التقليدية: عرض الكفر ومعلومات الأغنية
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -147,7 +143,6 @@ fun FullPlayerScreen(
             }
         }
 
-        // 3. شريط التقدم والوقت (ثابت بالأسفل في الحالتين لسهولة التحكم)
         Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
             Slider(
                 value = progress,
@@ -173,7 +168,6 @@ fun FullPlayerScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // 4. أزرار التحكم الكبيرة
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
@@ -208,7 +202,6 @@ fun FullPlayerScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // 5. الأزرار السفلية (التحكم في فتح وغلق الـ Lyrics فوريًا)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -216,7 +209,6 @@ fun FullPlayerScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // زرار الـ Lyrics يتحول للون الأخضر عند التفعيل لإعطاء مظهر متفاعل واحترافي
             IconButton(onClick = { showLyrics = !showLyrics }) {
                 Icon(
                     imageVector = Icons.Default.Refresh,
@@ -228,7 +220,7 @@ fun FullPlayerScreen(
             
             IconButton(onClick = { }) {
                 Icon(
-                    imageVector = Icons.Default.List,
+                    imageVector = Icons.Default.Menu, // استخدام الأيقونة الآمنة هنا لمنع الـ Unresolved Reference
                     contentDescription = "Queue",
                     tint = Color.Gray,
                     modifier = Modifier.size(24.dp)
