@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    // ضفنا الـ KAPT عشان كومبايلر Room يشتغل بدون مشاكل
+    id("kotlin-kapt") 
 }
 
 android {
@@ -64,4 +66,10 @@ dependencies {
     implementation("androidx.customview:customview:1.1.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.compose.material:material-icons-extended")
+
+    // مكتبات Room DB اللي كانت ناقصة وعاملة الإيرور
+    val roomVersion = "2.6.1"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
 }
