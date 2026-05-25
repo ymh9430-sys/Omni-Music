@@ -1,11 +1,13 @@
 package com.example.materialyouplayer.ui.screens.home
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,15 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.materialyouplayer.data.database.SongWithDetails
 
-// الألوان المستوحاة مباشرة من تصميمك المرفق
 val DarkGrayCard = Color(0xFF121212)
 val PureBlack = Color(0xFF000000)
 val MaterialGreen = Color(0xFF00C853)
@@ -78,9 +77,8 @@ fun SectionHeader(title: String, onSeeAllClick: () -> Unit) {
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
-        // السهم الأخضر المميز في تصميمك
         Icon(
-            imageVector = androidx.compose.material.icons.Icons.Default.ArrowForward,
+            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
             contentDescription = "See All",
             tint = MaterialGreen,
             modifier = Modifier
@@ -97,12 +95,14 @@ fun WideSongCard(songDetails: SongWithDetails, onClick: () -> Unit) {
             .width(240.dp)
             .height(130.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFF0288D1)) // خلفية زرقاء ديناميكية كمثال لـ In the Name of Love
+            .background(Color(0xFF0288D1))
             .clickable { onClick() }
             .padding(16.dp)
     ) {
         Column(
-            modifier = Modifier.fillMaxHeight().fillMaxWidth(0.7f),
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(0.7f),
             verticalArrangement = Arrangement.Center
         ) {
             Text(
@@ -122,8 +122,7 @@ fun WideSongCard(songDetails: SongWithDetails, onClick: () -> Unit) {
                 overflow = TextOverflow.Ellipsis
             )
         }
-        
-        // زر الـ Play الشفاف المتموضع في المنتصف/اليمين
+
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -133,7 +132,7 @@ fun WideSongCard(songDetails: SongWithDetails, onClick: () -> Unit) {
                 .background(Color.White.copy(alpha = 0.3f))
         ) {
             Icon(
-                imageVector = androidx.compose.material.icons.Icons.Default.PlayArrow,
+                imageVector = Icons.Default.PlayArrow,
                 contentDescription = "Play",
                 tint = Color.White,
                 modifier = Modifier.size(20.dp)
@@ -155,7 +154,6 @@ fun SquareAlbumCard(title: String, subtitle: String, onClick: () -> Unit) {
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color.DarkGray)
         ) {
-            // زر الـ Play الصغير الشفاف أسفل اليسار كما في صورتك
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -166,7 +164,7 @@ fun SquareAlbumCard(title: String, subtitle: String, onClick: () -> Unit) {
                     .background(Color.Black.copy(alpha = 0.6f))
             ) {
                 Icon(
-                    imageVector = androidx.compose.material.icons.Icons.Default.PlayArrow,
+                    imageVector = Icons.Default.PlayArrow,
                     contentDescription = "Play",
                     tint = Color.White,
                     modifier = Modifier.size(16.dp)
