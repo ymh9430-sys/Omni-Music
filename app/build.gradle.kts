@@ -39,12 +39,18 @@ android {
         compose = true
     }
     composeOptions {
-        // تحديث الاصدار ليكون متوافق تماماً مع Kotlin 1.9.x و JDK 21 في الـ Actions
-        kotlinCompilerExtensionVersion = "1.5.14" 
+        kotlinCompilerExtensionVersion = "1.5.11"
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
+    configurations.all {
+        resolutionStrategy {
+            force("androidx.customview:customview:1.1.0")
+            force("androidx.recyclerview:recyclerview:1.3.2")
         }
     }
 }
@@ -58,8 +64,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    
-    // Media3 لتشغيل الصوت في الخلفية
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.session)
     implementation(libs.androidx.media3.ui)
