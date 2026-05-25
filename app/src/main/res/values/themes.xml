@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- الثيم الأساسي للتطبيق - يدعم الـ Compose والـ Dark Mode الصريح -->
+    <style name="Theme.MaterialYouPlayer" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- جعل الخلفية باللون الأسود الكامل True Black كمظهر أساسي للتطبيق -->
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:statusBarColor">@android:color/black</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+        
+        <!-- تفعيل مظهر شريط التنقل الشفاف السفلي ليتوافق مع الـ Capsule Bottom Bar -->
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
+</resources>
