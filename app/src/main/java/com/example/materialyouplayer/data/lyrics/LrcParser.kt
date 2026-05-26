@@ -9,17 +9,16 @@ data class LyricWord(
     val endTime: Long
 )
 
-// كائن السطر المتكامل اللي بيحتوي على توقيت البدء، التوقيت الذكي للنهاية، والنص، والكلمات المفككة
+// كائن السطر المتكامل: تم تغيير startTime لـ var لتمكين معالجة التداخل اللحظي ذكياً
 data class LyricLine(
-    val startTime: Long,
+    var startTime: Long,
     var endTime: Long,
     val text: String,
-    var words: MutableList<LyricWord> = mutableListOf() // تم التحويل لـ MutableList لحل خطأ الـ Array Access
+    var words: MutableList<LyricWord> = mutableListOf()
 )
 
 object LrcParser {
 
-    // النماذج القياسية للتعرف على التوقيتات [mm:ss.xx] أو [mm:ss.xxx]
     private val lineTimePattern = Pattern.compile("\\[(\\d+):(\\d+)\\.(\\d+)\\]")
     private val wordTimePattern = Pattern.compile("<(\\d+):(\\d+)\\.(\\d+)>")
 
@@ -33,18 +32,19 @@ object LrcParser {
             val trimmed = rawLine.trim()
             if (trimmed.isEmpty()) continue
 
+            // قاعدة مخصصة: إزالة ونسف أقواس الـ span والـ HTML لضمان نظافة النص وعرضه بأمان
+            val cleanedHtmlLine = trimmed.replace(Regex("<span[^>]*>"), "").replace("</span>", "")
+
             // 1. استخراج وقت بدء السطر الرئيسي
-            val lineMatcher = lineTimePattern.matcher(trimmed)
+            val lineMatcher = lineTimePattern.matcher(cleanedHtmlLine)
             if (lineMatcher.find()) {
                 val min = lineMatcher.group(1)?.toLong() ?: 0L
                 val sec = lineMatcher.group(2)?.toLong() ?: 0L
                 val msStr = lineMatcher.group(3) ?: "0"
-                // تحويل الميلي ثانية بدقة سواء كانت رقمين أو ثلاثة
                 val ms = padMilliseconds(msStr)
                 val lineStartTime = (min * 60 * 1000) + (sec * 1000) + ms
 
-                // تنظيف نص السطر من تايم كود البداية للتعامل مع محتواه
-                val lineContent = trimmed.substring(lineMatcher.end())
+                val lineContent = cleanedHtmlLine.substring(lineMatcher.end())
 
                 // 2. تفكيك الكلمات والتوقيتات الداخلية (Word-by-Word Karaoke)
                 val wordList = mutableListOf<LyricWord>()
@@ -53,10 +53,11 @@ object LrcParser {
                 var lastIndex = 0
                 var currentWordStart = lineStartTime
 
-                // نقوم بمسح السطر بحثًا عن التوقيتات الداخلية لربط كل كلمة بوقتها
                 while (wordMatcher.find()) {
                     val rawWord = lineContent.substring(lastIndex, wordMatcher.start())
-                    val cleanWord = rawWord.trim() // إزالة المسافات الزائدة لضمان تطابق التوقيت مباشرة قبل الكلمة
+                    
+                    // قاعدة مخصصة: مسح المسافات قبل الكلمة وترك المسافة بعدها كما هي تماماً لثبات التزامن
+                    val cleanWord = rawWord.trimStart()
 
                     if (cleanWord.isNotEmpty()) {
                         val wMin = wordMatcher.group(1)?.toLong() ?: 0L
@@ -77,25 +78,24 @@ object LrcParser {
                     lastIndex = wordMatcher.end()
                 }
 
-                // التقاط الكلمة الأخيرة في السطر إن وجدت بعد آخر تايم كود
-                val remainingWord = lineContent.substring(lastIndex).trim()
+                // التقاط الكلمة الأخيرة في السطر
+                val remainingWord = lineContent.substring(lastIndex).trimStart()
                 if (remainingWord.isNotEmpty()) {
                     wordList.add(
                         LyricWord(
                             word = remainingWord,
                             startTime = currentWordStart,
-                            endTime = currentWordStart + 300L // مؤقتًا 300 ميلي ثانية
+                            endTime = currentWordStart + 300L
                         )
                     )
                 }
 
-                // تنظيف النص الكامل للسطر من أي تايم كودز لعرضه كـ Plain Text عند الحاجة
-                val plainText = lineContent.replaceAll("<[^>]*>", "").trim()
-
+                // استخراج النص الصافي لعرض الـ Plain Text عند الحاجة
+                val plainText = lineContent.replace(Regex("<[^>]*>"), "").trim()
                 parsedLines.add(
                     LyricLine(
                         startTime = lineStartTime,
-                        endTime = lineStartTime + 2000L, 
+                        endTime = lineStartTime + 2000L,
                         text = plainText,
                         words = wordList
                     )
@@ -103,37 +103,33 @@ object LrcParser {
             }
         }
 
-        // ========================================================
-        // تطبيق القواعد الذكية (Smart End Time & Overlap Resolution)
-        // ========================================================
+        // ترتيب الأسطر زمنياً
         val finalLines = parsedLines.sortedBy { it.startTime }.toMutableList()
 
+        // قاعدة مخصصة: لو جملتين بيبدأوا في نفس الوقت بالظبط، بنزود 00:00.001 ثانية (1 ميلي ثانية) على واحدة منهم لمنع الـ Overlap الإملائي
+        for (i in 0 until finalLines.size - 1) {
+            if (finalLines[i].startTime == finalLines[i + 1].startTime) {
+                finalLines[i + 1].startTime = finalLines[i + 1].startTime + 1
+            }
+        }
+
+        // إعادة الفرز بعد حل التداخلات لتأكيد الترتيب
+        finalLines.sortBy { it.startTime }
+
+        // ربط أوقات النهاية الذكية للأسطر والكلمات الأخيرة
         for (i in 0 until finalLines.size) {
             val currentLine = finalLines[i]
-            
             if (i < finalLines.size - 1) {
                 val nextLine = finalLines[i + 1]
-                
-                // قاعدة: لو السطرين بيبدأوا في نفس الوقت بالظبط، بنزود 1 ميلي ثانية على التاني لمنع تداخل الأنيميشن
-                if (currentLine.startTime == nextLine.startTime) {
-                    finalLines[i + 1] = nextLine.copy(startTime = nextLine.startTime + 1L)
-                }
-
-                // قاعدة الـ Smart End Time: نهاية السطر هي بداية السطر الجديد
-                val gap = nextLine.startTime - currentLine.startTime
-                if (gap > 1500L) {
-                    val lastWordEnd = currentLine.words.lastOrNull()?.endTime ?: (currentLine.startTime + 1000L)
-                    currentLine.endTime = lastWordEnd + 200L
-                } else {
-                    currentLine.endTime = nextLine.startTime
-                }
+                // قاعدة مخصصة: توقيت نهاية السطر (وآخر كلمة فيه) يطابق بالملّي توقيت بداية السطر الجديد
+                currentLine.endTime = nextLine.startTime
             } else {
-                // السطر الأخير في الأغنية
+                // السطر الأخير في الأغنية ككل
                 val lastWordEnd = currentLine.words.lastOrNull()?.endTime ?: (currentLine.startTime + 1500L)
                 currentLine.endTime = lastWordEnd + 500L
             }
 
-            // مزامنة أوقات نهاية الكلمات الداخلية لتطابق نهاية السطر الذكية تماماً
+            // مزامنة أوقات نهاية الكلمة الأخيرة داخل السطر لتطابق نهاية السطر الذكية تماماً
             if (currentLine.words.isNotEmpty()) {
                 val lastWordIndex = currentLine.words.size - 1
                 val lastWord = currentLine.words[lastWordIndex]
@@ -151,9 +147,5 @@ object LrcParser {
             else -> msStr.take(3)
         }
         return padded.toLongOrNull() ?: 0L
-    }
-
-    private fun String.replaceAll(regex: String, replacement: String): String {
-        return Pattern.compile(regex).matcher(this).replaceAll(replacement)
     }
 }
