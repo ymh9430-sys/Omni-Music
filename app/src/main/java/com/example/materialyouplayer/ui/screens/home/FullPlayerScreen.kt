@@ -7,11 +7,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Pause // إضافة الأيقونة المفقودة
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Menu // استيراد الأيقونة البديلة الآمنة
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,6 +28,7 @@ import com.example.materialyouplayer.ui.screens.lyrics.LyricsScreen
 import com.example.materialyouplayer.ui.viewmodel.MainViewModel
 import com.example.materialyouplayer.ui.theme.PureBlack
 import com.example.materialyouplayer.ui.theme.MaterialGreen
+import kotlin.collections.List // استيراد صريح للـ List لمنع التعارض
 
 @Composable
 fun FullPlayerScreen(
@@ -177,7 +179,6 @@ fun FullPlayerScreen(
                 Icon(imageVector = Icons.Default.SkipPrevious, contentDescription = "Previous", tint = Color.White, modifier = Modifier.size(36.dp))
             }
             Spacer(modifier = Modifier.width(32.dp))
-            
             Surface(
                 onClick = { viewModel.togglePlayPause() },
                 shape = RoundedCornerShape(percent = 50),
@@ -186,14 +187,13 @@ fun FullPlayerScreen(
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Icon(
-                        imageVector = if (playbackState.isPlaying) Icons.Default.MoreVert else Icons.Default.PlayArrow,
+                        imageVector = if (playbackState.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                         contentDescription = "Play/Pause",
-                        tint = Color.Black,
-                        modifier = Modifier.size(40.dp)
+                        tint = PureBlack,
+                        modifier = Modifier.size(32.dp)
                     )
                 }
             }
-            
             Spacer(modifier = Modifier.width(32.dp))
             IconButton(onClick = { viewModel.skipToNext() }, modifier = Modifier.size(64.dp)) {
                 Icon(imageVector = Icons.Default.SkipNext, contentDescription = "Next", tint = Color.White, modifier = Modifier.size(36.dp))
@@ -220,7 +220,7 @@ fun FullPlayerScreen(
             
             IconButton(onClick = { }) {
                 Icon(
-                    imageVector = Icons.Default.Menu, // استخدام الأيقونة الآمنة هنا لمنع الـ Unresolved Reference
+                    imageVector = Icons.Default.Menu,
                     contentDescription = "Queue",
                     tint = Color.Gray,
                     modifier = Modifier.size(24.dp)
