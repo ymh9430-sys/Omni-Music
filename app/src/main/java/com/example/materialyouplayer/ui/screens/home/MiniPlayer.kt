@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.materialyouplayer.ui.viewmodel.MainViewModel
+import com.example.materialyouplayer.ui.theme.MaterialGreen // استيراد اللون لحل المشكلة
 
 @Composable
 fun MiniPlayer(
