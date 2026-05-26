@@ -17,12 +17,12 @@ class PlaybackService : MediaSessionService() {
     override fun onCreate() {
         super.onCreate()
         
-        // بناء مشغل الـ ExoPlayer الاحترافي وتجهيزه للأداء العالي
+        // بناء مشغل الـ ExoPlayer الاحترافي وتجهيزه للأداء العالي والتعامل التلقائي مع الـ Focus
         player = ExoPlayer.Builder(this)
-            .setAudioAttributes(AudioAttributes.DEFAULT, true) // التعامل الذكي مع الفوكس (لو مكالمة جت الصوت يقف تلقائي)
+            .setAudioAttributes(AudioAttributes.DEFAULT, true)
             .build()
 
-        // إنشاء الـ MediaSession وربطه بالـ Player لإدارة التحكم الخارجي
+        // إنشاء الـ MediaSession وربطه بالـ Player لإدارة التحكم الخارجي وسماعات البلوتوث
         player?.let { exoPlayer ->
             mediaSession = MediaSession.Builder(this, exoPlayer).build()
         }
