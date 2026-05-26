@@ -28,8 +28,8 @@ import com.example.materialyouplayer.ui.viewmodel.MainViewModel
 @Composable
 fun HomeScreen(
     viewModel: MainViewModel,
-    onNavigateToArtist: (String) -> Unit,
-    onNavigateToAlbum: (String) -> Unit,
+    onNavigateToArtist: (Long) -> Unit, // تم التعديل لـ Long لمنع الـ Type Mismatch
+    onNavigateToAlbum: (Long) -> Unit,  // تم التعديل لـ Long لمنع الـ Type Mismatch
     onNavigateToRecentlyAddedAll: () -> Unit = {}
 ) {
     val songs by viewModel.allSongs.collectAsState(initial = emptyList())
@@ -45,7 +45,6 @@ fun HomeScreen(
             .background(pureBlack)
             .padding(bottom = 80.dp) 
     ) {
-        
         item {
             Box(
                 modifier = Modifier
@@ -139,7 +138,7 @@ fun HomeScreen(
                             subtitle = albumWithSongs.album.albumArtist,
                             albumId = albumWithSongs.album.albumId
                         ) {
-                            onNavigateToAlbum(albumWithSongs.album.albumId.toString())
+                            onNavigateToAlbum(albumWithSongs.album.albumId)
                         }
                     }
                 }
@@ -162,7 +161,7 @@ fun HomeScreen(
                 ) {
                     items(artists) { artistWithSongs ->
                         CircleArtistCard(name = artistWithSongs.artist.name) {
-                            onNavigateToArtist(artistWithSongs.artist.artistId.toString())
+                            onNavigateToArtist(artistWithSongs.artist.artistId)
                         }
                     }
                 }
