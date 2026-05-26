@@ -66,6 +66,7 @@ dependencies {
     implementation("androidx.customview:customview:1.1.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.compose.material:material-icons-extended")
+    implementation("io.coil-kt:coil-compose:2.6.0")
 
     // مكتبات Room DB اللي كانت ناقصة وعاملة الإيرور
     val roomVersion = "2.6.1"
